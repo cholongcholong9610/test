@@ -1,0 +1,109 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta charset="utf-8" />
+    <title></title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
+    <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">-->
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">-->
+    <style>
+        #container {
+            width: 1000px;
+            margin: auto;
+        }
+
+        .info {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 5;
+            -webkit-box-orient: vertical;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body style="background-color: #eaf8da ">
+    <div id="container">
+        <h1 class="alert alert-success text-center">推薦農村優良伴手禮</h1>
+        <input id="txtCity" type="text" placeholder="查詢城市" /><input id="Button1" type="button" value="查詢" onclick="getData()" />
+
+    </div>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script>
+        var item = "";
+
+        $('#container').append("<div id='TravelData' class='row justify-content-center'></div>")
+        getData();
+
+        function getData() {
+            $('#TravelData').empty();
+
+            $.ajax({
+                type: 'get',
+                url: `https://data.coa.gov.tw/Service/OpenData/ODwsv/ODwsvAgriculturalProduce.aspx?&$filter=County+like+${$("#txtCity").val()}`,
+                success: function (data) {
+
+                    console.log(data);
+                    for (var i = 0; i < data.length; i++) {
+
+                        item = `<div class="card w-25 m-2 shadow">
+                                <div class="text-center"><img src="${data[i].Column1}" class="img-fluid"/></div>
+                                <h5 class="text-center"> ${data[i].Name} </h5>
+                                <h6 class="text-center">${data[i].County} ${data[i].Township}</h6 >
+                                <p class="info">${data[i].Feature}</p>
+                                <button type="button" class="btn btn-success btn-sm btnDetail " data-toggle="modal" data-target="#exampleModal${[i]}">
+                                詳細資料
+                                </button>
+                                <div class="modal fade" id="exampleModal${[i]}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-xl">
+                                <div class="modal-content p-3">
+                                <div class="modal-header alert alert-success text-center display-4 d-block" >
+                                推薦農村優良伴手禮
+
+                                </div>
+                                <div class="modal-body">
+                                <h2 class="text-center max-width "><b> ${data[i].Name}</b> </h2></div >
+                                <h6 class="text-right">${data[i].County} ${data[i].Township}</h6 >
+                                <div class="row">
+                                <div class="text-center col-5 "><img src="${data[i].Column1}" class="img-fluid"/>
+                                <a href="https://www.google.com.tw/maps/search/${data[i].SalePlace}" target="_blank" class="alert-warming">  地   圖  </a>
+                                </div>
+                                <p class="text-left col-7">${data[i].Feature}</p>
+                                <hr />
+                                <div class="center">
+                                <h6 class="ml-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-telephone" viewBox="0 0 16 16">
+                                <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z"/>
+                                </svg>電話：${data[i].ContactTel}</h6>
+                                <p class="ml-3">地址：${data[i].SalePlace}</p>
+                                </div >
+                                </div>
+                                <div class="modal-footer">
+                                <button type="button" class="btn btn-outline-info btn-block" data-dismiss="modal">返回列表</button>
+                                </div>
+                                </div>
+                                </div>
+                                </div >
+                                </div>`;
+                        $('#TravelData').append(item);
+
+                    }
+                },
+                error: function () {
+                    alert('error');
+                }
+            });
+        }
+
+                                            //$('#TravelData').click(function (evt) {
+                                            //    $('.modal-body').html(evt.target.title);
+                                            //    console.log( evt.target.title);
+                                            //});
+
+    </script>
+</body>
+</html>
